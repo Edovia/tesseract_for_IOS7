@@ -2,7 +2,7 @@
 
 # libtool - Provide generalized library-building support services.
 # Generated automatically by config.status (leptonica) 1.69
-# Libtool was configured on host Zhaoyus-MacBook-Pro.local:
+# Libtool was configured on host Lucs-MacBook-Pro.local:
 # NOTE: Changes made to this file will be lost: look at ltmain.sh.
 #
 #   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2003, 2004, 2005,
@@ -56,16 +56,16 @@ fast_install=needless
 
 # The host system.
 host_alias=
-host=i386-apple-darwin13.0.0
-host_os=darwin13.0.0
+host=i386-apple-darwin13.0.2
+host_os=darwin13.0.2
 
 # The build system.
 build_alias=
-build=i386-apple-darwin13.0.0
-build_os=darwin13.0.0
+build=i386-apple-darwin13.0.2
+build_os=darwin13.0.2
 
 # A sed program that does not truncate output.
-SED="/usr/local/bin/gsed"
+SED="/usr/bin/sed"
 
 # Sed that helps us avoid accidentally triggering echo(1) options like -n.
 Xsed="$SED -e 1s/^X//"
@@ -132,7 +132,7 @@ old_postuninstall_cmds=""
 LTCC="/usr/bin/clang"
 
 # LTCC compiler flags.
-LTCFLAGS="-arch i386 -pipe -no-cpp-precomp -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.0.sdk -miphoneos-version-min=7.0 -I/Users/zhaoyuli/sandbox/temp/myocr/dependencies/include -L/Users/zhaoyuli/sandbox/temp/myocr/dependencies/lib"
+LTCFLAGS="-arch i386 -pipe -no-cpp-precomp -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.0.sdk -miphoneos-version-min=7.0 -I/Users/lucvandal/Edovia/Projects/ScanLab/Vendor/OCR/tesseract_libs/dependencies/include -L/Users/lucvandal/Edovia/Projects/ScanLab/Vendor/OCR/tesseract_libs/dependencies/lib"
 
 # Take the output of nm and produce a listing of raw symbols and C names.
 global_symbol_pipe="sed -n -e 's/^.*[	 ]\\([BCDEGRST][BCDEGRST]*\\)[	 ][	 ]*_\\([_A-Za-z][_A-Za-z0-9]*\\)\$/\\1 _\\2 \\2/p'"

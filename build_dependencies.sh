@@ -52,6 +52,18 @@ setenv_arm7s()
     setenv_all
 }
 
+setenv_arm64()
+{
+unset DEVROOT SDKROOT CFLAGS CC LD CPP CXX AR AS NM CXXCPP RANLIB LDFLAGS CPPFLAGS CXXFLAGS
+
+export DEVROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer
+export SDKROOT=$DEVROOT/SDKs/iPhoneOS$IOS_BASE_SDK.sdk
+
+export CFLAGS="-arch arm64 -pipe -no-cpp-precomp -isysroot $SDKROOT -miphoneos-version-min=$IOS_DEPLOY_TGT -I$SDKROOT/usr/include/"
+
+setenv_all
+}
+
 setenv_i386()
 {
     unset DEVROOT SDKROOT CFLAGS CC LD CPP CXX AR AS NM CXXCPP RANLIB LDFLAGS CPPFLAGS CXXFLAGS
@@ -70,8 +82,9 @@ create_outdir_lipo()
     for lib_i386 in `find $LOCAL_OUTDIR/i386 -name "lib*.a"`; do
         lib_arm7=`echo $lib_i386 | sed "s/i386/arm7/g"`
         lib_arm7s=`echo $lib_i386 | sed "s/i386/arm7s/g"`
+        lib_arm64=`echo $lib_i386 | sed "s/i386/arm64/g"`
         lib=`echo $lib_i386 | sed "s/i386//g"`
-        xcrun -sdk iphoneos lipo -arch armv7s $lib_arm7s -arch armv7 $lib_arm7 -arch i386 $lib_i386 -create -output $lib
+        xcrun -sdk iphoneos lipo -arch armv7s $lib_arm7s -arch armv7 $lib_arm7 -arch arm64 $lib_arm64 -arch i386 $lib_i386 -create -output $lib
     done
 }
 
@@ -95,7 +108,7 @@ merge_libfiles()
 #######################
 cd $LEPTON_LIB
 rm -rf $LOCAL_OUTDIR
-mkdir -p $LOCAL_OUTDIR/arm7 $LOCAL_OUTDIR/i386 $LOCAL_OUTDIR/arm7s
+mkdir -p $LOCAL_OUTDIR/arm7 $LOCAL_OUTDIR/i386 $LOCAL_OUTDIR/arm7s $LOCAL_OUTDIR/arm64
 
 make clean 2> /dev/null
 make distclean 2> /dev/null
@@ -110,6 +123,13 @@ setenv_arm7s
 ./configure --host=arm-apple-darwin7s --enable-shared=no --disable-programs --without-zlib --without-libpng --without-jpeg --without-giflib --without-libtiff
 make -j12
 cp -rvf src/.libs/lib*.a $LOCAL_OUTDIR/arm7s
+
+make clean 2> /dev/null
+make distclean 2> /dev/null
+setenv_arm64
+./configure --host=arm-apple-darwin8 --enable-shared=no --disable-programs --without-zlib --without-libpng --without-jpeg --without-giflib --without-libtiff
+make -j12
+cp -rvf src/.libs/lib*.a $LOCAL_OUTDIR/arm64
 
 make clean 2> /dev/null
 make distclean 2> /dev/null
@@ -129,7 +149,7 @@ cd ..
 #######################
 cd $TESSERACT_LIB
 rm -rf $LOCAL_OUTDIR
-mkdir -p $LOCAL_OUTDIR/arm7 $LOCAL_OUTDIR/i386 $LOCAL_OUTDIR/arm7s
+mkdir -p $LOCAL_OUTDIR/arm7 $LOCAL_OUTDIR/i386 $LOCAL_OUTDIR/arm7s $LOCAL_OUTDIR/arm64
 
 
 make clean 2> /dev/null
@@ -152,6 +172,15 @@ merge_libfiles $LOCAL_OUTDIR/arm7s libtesseract_all.a
 
 make clean 2> /dev/null
 make distclean 2> /dev/null
+setenv_arm64
+bash autogen.sh
+./configure --host=arm-apple-darwin8 --enable-shared=no LIBLEPT_HEADERSDIR=$GLOBAL_OUTDIR/include/
+make -j12
+for i in `find . -name "lib*.a" | grep -v arm`; do cp -rvf $i $LOCAL_OUTDIR/arm64; done
+merge_libfiles $LOCAL_OUTDIR/arm64 libtesseract_all.a
+
+make clean 2> /dev/null
+make distclean 2> /dev/null
 setenv_i386
 bash autogen.sh
 ./configure --enable-shared=no LIBLEPT_HEADERSDIR=$GLOBAL_OUTDIR/include/
@@ -161,9 +190,7 @@ merge_libfiles $LOCAL_OUTDIR/i386 libtesseract_all.a
 
 create_outdir_lipo
 mkdir -p $GLOBAL_OUTDIR/include/tesseract
-tess_inc=( api/apitypes.h api/baseapi.h ccmain/thresholder.h ccstruct/publictypes.h ccutil/errcode.h
-           ccutil/genericvector.h ccutil/helpers.h ccutil/host.h ccutil/ndminx.h ccutil/ocrclass.h
-           ccutil/platform.h ccutil/tesscallback.h ccutil/unichar.h )
+tess_inc=( api/apitypes.h api/baseapi.h ccutil/errcode.h ccutil/genericvector.h ccutil/helpers.h ccutil/host.h ccmain/ltrresultiterator.h ccutil/memry.h ccutil/ndminx.h ccutil/ocrclass.h ccmain/pageiterator.h ccutil/platform.h ccstruct/publictypes.h ccmain/resultiterator.h ccutil/strngs.h ccutil/tesscallback.h ccmain/thresholder.h ccutil/unichar.h ccutil/unicharmap.h ccutil/unicharset.h )
 for i in "${tess_inc[@]}"; do
    cp -rvf $i $GLOBAL_OUTDIR/include/tesseract
 done
